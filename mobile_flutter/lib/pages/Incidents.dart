@@ -1,7 +1,10 @@
 import 'package:be_the_hero/pages/Detail.dart';
 import 'package:be_the_hero/services/api.dart';
+import 'package:be_the_hero/utils/ThemeChanger.dart';
+import 'package:be_the_hero/utils/Themes.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:touchable_opacity/touchable_opacity.dart';
 
 class Incidents extends StatefulWidget {
@@ -14,8 +17,12 @@ class _IncidentsState extends State<Incidents> {
 
   String count = "0";
 
+  bool themeSwitch = false;
+
   @override
   Widget build(BuildContext context) {
+    ThemeChanger themeChanger = Provider.of<ThemeChanger>(context);
+
     return Scaffold(
       body: FutureBuilder(
           future: api.getData(),
@@ -34,7 +41,7 @@ class _IncidentsState extends State<Incidents> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      customAppBar(),
+                      customAppBar(themeChanger),
                       header(),
                       body(incidents),
                     ]),
@@ -61,57 +68,26 @@ class _IncidentsState extends State<Incidents> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      Text(
-                        'ONG:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff41414d),
-                        ),
+                      Text('ONG:', style: Theme.of(context).textTheme.body1),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: Text(incident['name'],
+                            style: Theme.of(context).textTheme.body2),
                       ),
+                      Text('CASO:', style: Theme.of(context).textTheme.body1),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: Text(incident['title'],
+                            style: Theme.of(context).textTheme.body2),
+                      ),
+                      Text('VALOR:', style: Theme.of(context).textTheme.body1),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 24),
                         child: Text(
-                          incident['name'],
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Color(0xff737380),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'CASO:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff41414d),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 24),
-                        child: Text(
-                          incident['title'],
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Color(0xff737380),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'VALOR:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff41414d),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 24),
-                        child: Text(
-                          NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$')
-                              .format(incident['value']),
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Color(0xff737380),
-                          ),
-                        ),
+                            NumberFormat.currency(
+                                    locale: 'pt_BR', symbol: 'R\$')
+                                .format(incident['value']),
+                            style: Theme.of(context).textTheme.body2),
                       ),
                       TouchableOpacity(
                         onTap: () {
@@ -124,13 +100,8 @@ class _IncidentsState extends State<Incidents> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Text(
-                              'Ver Mais Detalhes',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xffe03041)),
-                            ),
+                            Text('Ver Mais Detalhes',
+                                style: Theme.of(context).textTheme.button),
                             Icon(
                               Icons.arrow_forward,
                               size: 16,
@@ -148,13 +119,26 @@ class _IncidentsState extends State<Incidents> {
     );
   }
 
-  customAppBar() {
+  customAppBar(ThemeChanger themeChanger) {
     return Padding(
       padding: const EdgeInsets.only(top: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Image.asset('images/logo.png'),
+          Switch(
+            value: themeSwitch,
+            onChanged: (value) {
+              setState(() {
+                themeSwitch = value;
+                themeSwitch
+                    ? themeChanger.setTheme(Themes().dark())
+                    : themeChanger.setTheme(Themes().light());
+              });
+            },
+            activeColor: Color(0xffe03041),
+            activeTrackColor: Colors.black,
+          ),
           RichText(
             text: TextSpan(
                 style: TextStyle(color: Color(0xff737380), fontSize: 15),
@@ -176,22 +160,11 @@ class _IncidentsState extends State<Incidents> {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.only(top: 48),
-          child: Text(
-            "Bem-Vindo!",
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              color: Color(0xff13131a),
-            ),
-          ),
+          child: Text("Bem-Vindo!", style: Theme.of(context).textTheme.title),
         ),
         Text(
           "Escolha um dos casos abaixo e salve o dia.",
-          style: TextStyle(
-            fontSize: 16,
-            height: 2.4,
-            color: Color(0xff737380),
-          ),
+          style: Theme.of(context).textTheme.subtitle,
         ),
       ],
     );

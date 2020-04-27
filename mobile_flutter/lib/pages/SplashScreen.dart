@@ -10,15 +10,16 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SpashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays([]);
-    
+
     Future.delayed(Duration(seconds: 4)).then((_) {
-      Navigator.pushReplacement(context, 
-        MaterialPageRoute(builder: (context) => Incidents(),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Incidents(),
         ),
       );
     });
@@ -26,6 +27,9 @@ class _SpashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset("images/splash.png",fit: BoxFit.cover,);
+    return Image.asset(
+      "images/splash.png",
+      fit: BoxFit.cover,
+    );
   }
 }
